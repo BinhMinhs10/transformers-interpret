@@ -27,9 +27,9 @@ setup(
     description="Transformers Interpret is a model explainability tool designed to work exclusively with 🤗 transformers.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="Charles Pierse",
-    author_email="charlespierse@gmail.com",
-    url="https://github.com/cdpierse/transformers-interpret",
+    author="BinhMinhs10",
+    author_email="bkbinhminh9x@gmail.com",
+    url="https://github.com/BinhMinhs10/transformers-interpret",
     keywords=[
         "machine learning",
         "natural language proessing",

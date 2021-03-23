@@ -39,12 +39,10 @@ class WrapedSenti:
             padding=True,
             return_tensors='pt'
         )
-        print(encode_ids)
         results = self.model(
             input_ids=encode_ids.input_ids,
             attention_mask=encode_ids.attention_mask
         )
-        print(results[0].detach().numpy())
         # print(softmax(results[0].detach().numpy()))
         return results[0].detach().numpy()
 
@@ -62,7 +60,7 @@ def explainer(args, text, num_samples: int = 20):
         # Our classifer uses bigrams or contextual ordering to classify text
         # Hence, order matters, and we cannot use bag of words.
         bow=False,
-        class_names=["trung tính", "tiêu cực", "tích cực"],
+        class_names=["neutral", "positive", "negative"],
     )
 
     # Make a prediction and explain it:

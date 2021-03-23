@@ -1,12 +1,13 @@
 import argparse
 import json
+import numpy as np
 from pathlib import Path
 from lime.lime_text import LimeTextExplainer
 from scipy.special import softmax
+from typing import List
 import torch
 
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, BertConfig
-from pyvi import ViTokenizer
 
 parser = argparse.ArgumentParser(description="topic")
 parser.add_argument(
@@ -29,26 +30,26 @@ class WrapedSenti:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.max_len = 128
 
-    def predict(self, texts):
-        input_ids = self.tokenizer.encode(
-            text=texts,
+    def predict(self, texts: List[str]) -> np.array([float, ...]):
+        encode_ids = self.tokenizer.batch_encode_plus(
+            texts,
             add_special_tokens=True,
             max_length=self.max_len,
             truncation=True,
-            padding=False,
-            is_split_into_words=True
+            padding=True,
+            return_tensors='pt'
         )
-        # print(input_ids)
+        print(encode_ids)
         results = self.model(
-            torch.tensor([input_ids])
+            input_ids=encode_ids.input_ids,
+            attention_mask=encode_ids.attention_mask
         )
-        # print(softmax(results[0], axis=0).argmax(axis=1))
-        print(softmax(results[0].detach().numpy()))
-        import numpy as np
-        return softmax(results[0].detach().numpy())
+        print(results[0].detach().numpy())
+        # print(softmax(results[0].detach().numpy()))
+        return results[0].detach().numpy()
 
 
-def explainer(args, text, num_samples=20):
+def explainer(args, text, num_samples: int = 20):
     """Run LIME explainer on provided classifier"""
 
     model = WrapedSenti(args)
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     # texts = ["mọi chuyện diễn ra không như ngày thường"]
     # texts = ['bản ABS nhìn sang chảnh hoành tráng']
     for i, text in enumerate(texts):
-        exp = explainer(args, text, 1)
+        exp = explainer(args, text, 10)
         output_filename = Path(
             __file__
         ).parent / "outputs/{}-explanation-lime.html".format(i + 1)
